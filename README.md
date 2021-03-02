@@ -1,4 +1,4 @@
-# admin
+# admin-js
 
 ## Project setup
 ```
