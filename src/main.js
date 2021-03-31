@@ -7,6 +7,10 @@ import '@/style/main.less'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
+// 引入vue3.0新特性语法composition API
+import VueCompositionApi from '@vue/composition-api'
+Vue.use(VueCompositionApi)
+
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false

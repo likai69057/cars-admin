@@ -28,13 +28,20 @@
               <el-input v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button class="block" type="success">获取验证码</el-button>
+              <el-button class="block" type="success" @click="getMessage()">获取验证码</el-button>
             </el-col>
           </el-row>
         </el-form-item>
 
         <el-form-item>
-          <el-button class="danger-btn block" type="danger" @click="submitForm('ruleForm')">提交</el-button>
+          <el-button
+            class="danger-btn block"
+            type="danger"
+            disabled
+            @click="submitForm('ruleForm')"
+          >
+            {{ isShow ? '注册' : '登录' }}
+          </el-button>
         </el-form-item>
       </el-form>
       <!-- 登录表单 -->
@@ -44,6 +51,7 @@
 
 <script>
 import { validateUser, validatepass } from '../../utils/validate'
+import { getSms } from '@/api/login'
 
 export default {
   name: 'Login',
@@ -128,7 +136,9 @@ export default {
       } else {
         this.isShow = true
       }
+      this.$refs.ruleForm.resetFields()
     },
+    // 提交表单
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -137,6 +147,29 @@ export default {
           console.log('error submit!!')
           return false
         }
+      })
+    },
+    // 获取验证码
+    async getMessage () {
+      // 在获取验证码之前先验证邮箱是否为空（前端验证）
+      if (this.ruleForm.username === '') {
+        this.$message.error('邮箱不能为空！')
+        return false
+      }
+      // 发送验证码请求
+      const data = {
+        username: this.ruleForm.username,
+        module: this.isShow ? 'register' : 'login'
+      }
+      await getSms(data).then(response => {
+        // 返回验证码 提示成功
+        this.$message({
+          message: '验证码已发送',
+          type: 'success'
+        })
+        console.log(response.data)
+      }).catch(error => {
+        console.log(error)
       })
     }
   }
