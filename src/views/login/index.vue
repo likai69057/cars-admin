@@ -28,7 +28,7 @@
               <el-input v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button class="block" type="success" @click="getMessage()">获取验证码</el-button>
+              <el-button class="block" type="success" :disabled="message.status" @click="getMessage()">{{ message.text }}</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -120,7 +120,11 @@ export default {
         code: [
           { validator: checkcode, trigger: 'blur' }
         ]
-      }
+      },
+      message: {
+        status: false,
+        text: '发送验证码'
+      } // 控制发送验证码按钮是否能点击和显示文字
     }
   },
   methods: {
@@ -168,9 +172,12 @@ export default {
           type: 'success'
         })
         console.log(response.data)
+        // 发送成功 显示倒计时 启用登录/注册按钮
       }).catch(error => {
         console.log(error)
       })
+      this.message.status = true
+      this.message.text = '发送中'
     }
   }
 }
