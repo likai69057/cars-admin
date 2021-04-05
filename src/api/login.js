@@ -11,4 +11,18 @@ export const getSms = function (data) {
 
 // 2.获取用户角色
 // 3.登录
+export const login = function (data) {
+  return serve.request({
+    method: 'POST',
+    url: '/login/',
+    data
+  })
+}
 // 4. 注册
+export const register = function (data) {
+  return serve.request({
+    method: 'POST',
+    url: '/register/',
+    data
+  })
+}

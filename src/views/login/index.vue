@@ -25,7 +25,7 @@
           <label>验证码</label>
           <el-row :gutter="11">
             <el-col :span="15">
-              <el-input v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input>
+              <el-input v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
             </el-col>
             <el-col :span="9">
               <el-button class="block" type="success" :disabled="message.status" @click="getMessage()">{{ message.text }}</el-button>
@@ -37,7 +37,7 @@
           <el-button
             class="danger-btn block"
             type="danger"
-            disabled
+            :disabled="canLogin"
             @click="submitForm('ruleForm')"
           >
             {{ isShow ? '注册' : '登录' }}
@@ -51,7 +51,7 @@
 
 <script>
 import { validateUser, validatepass } from '../../utils/validate'
-import { getSms } from '@/api/login'
+import { getSms, register, login } from '@/api/login'
 
 export default {
   name: 'Login',
@@ -97,8 +97,8 @@ export default {
     }
     return {
       menuTab: [
-        { text: '登录', current: true }, // current控制登录注册按钮切换
-        { text: '注册', current: false }
+        { text: '登录', current: true, type: 'login' }, // current控制登录注册按钮切换
+        { text: '注册', current: false, type: 'register' }
       ],
       isShow: false, // 注册中的重复密码框显示与否
       ruleForm: {
@@ -121,15 +121,20 @@ export default {
           { validator: checkcode, trigger: 'blur' }
         ]
       },
+      // 控制发送验证码按钮是否能点击和显示文字
       message: {
         status: false,
-        text: '发送验证码'
-      } // 控制发送验证码按钮是否能点击和显示文字
+        text: '获取验证码'
+      },
+      // 控制登录按钮是否可以点击
+      canLogin: false,
+      // 定义一个定时器对象
+      timer: null
     }
   },
   methods: {
+    // 控制注册登录按钮切换时的按钮背景
     toggleMenu (data) {
-      // 控制注册登录按钮切换时的按钮背景
       this.menuTab.forEach(el => {
         el.current = false
       })
@@ -142,19 +147,8 @@ export default {
       }
       this.$refs.ruleForm.resetFields()
     },
-    // 提交表单
-    submitForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert('submit!')
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
     // 获取验证码
-    async getMessage () {
+    getMessage () {
       // 在获取验证码之前先验证邮箱是否为空（前端验证）
       if (this.ruleForm.username === '') {
         this.$message.error('邮箱不能为空！')
@@ -165,19 +159,85 @@ export default {
         username: this.ruleForm.username,
         module: this.isShow ? 'register' : 'login'
       }
-      await getSms(data).then(response => {
+      this.message.status = true
+      this.message.text = '发送中'
+      getSms(data).then(response => {
         // 返回验证码 提示成功
         this.$message({
           message: '验证码已发送',
           type: 'success'
         })
-        console.log(response.data)
-        // 发送成功 显示倒计时 启用登录/注册按钮
+        // 发送成功 启用登录/注册按钮
+        this.canLogin = false
+
+        // 启用倒计时
+        // **********注意Vue中方法调用方法 子方法里的this指向methods对象
+        let number = 60
+        // 定时器启动之前先判断一下是否还有定时器未关闭
+        clearInterval(this.timer)
+        this.timer = setInterval(() => {
+          number--
+          if (number === 0) {
+            clearInterval(this.timer)
+            this.message.status = false
+            this.message.text = '再次获取'
+          } else {
+            this.message.text = `倒计时${number}秒`
+          }
+        }, 1000)
       }).catch(error => {
         console.log(error)
       })
-      this.message.status = true
-      this.message.text = '发送中'
+    },
+    // 提交表单
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        // 验证通过
+        if (valid) {
+          // 判断是注册界面还是登录页面 分别调用不同的接口
+          this.isShow ? this.Register() : this.Login()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    // 注册
+    Register () {
+      const requestData = {
+        username: this.ruleForm.username,
+        password: this.ruleForm.password,
+        code: this.ruleForm.code,
+        module: 'register'
+      }
+      // 调用注册接口
+      register(requestData).then(response => {
+        const data = response.data
+        this.$message({
+          message: data.message,
+          type: 'success'
+        })
+        // 注册成功之后自动跳转登录页面 重置验证码并清除计时器
+        this.toggleMenu(this.menuTab[0])
+        this.message.status = false
+        this.message.text = '获取验证码'
+        clearInterval(this.timer)
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    // 登录
+    Login () {
+      const requestData = {
+        username: this.ruleForm.username,
+        password: this.ruleForm.password,
+        code: this.ruleForm.code
+      }
+      login(requestData).then(response => {
+        console.log(response.data)
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
 }
