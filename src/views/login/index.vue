@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import sha1 from 'js-sha1'
 import { validateUser, validatepass } from '../../utils/validate'
 import { getSms, register, login } from '@/api/login'
 
@@ -146,6 +147,10 @@ export default {
         this.isShow = true
       }
       this.$refs.ruleForm.resetFields()
+      // 切换时重置验证码按钮
+      this.message.status = false
+      this.message.text = '获取验证码'
+      clearInterval(this.timer)
     },
     // 获取验证码
     getMessage () {
@@ -206,7 +211,7 @@ export default {
     Register () {
       const requestData = {
         username: this.ruleForm.username,
-        password: this.ruleForm.password,
+        password: sha1(this.ruleForm.password), // sha1加密方式加密
         code: this.ruleForm.code,
         module: 'register'
       }
@@ -230,11 +235,15 @@ export default {
     Login () {
       const requestData = {
         username: this.ruleForm.username,
-        password: this.ruleForm.password,
+        password: sha1(this.ruleForm.password),
         code: this.ruleForm.code
       }
       login(requestData).then(response => {
         console.log(response.data)
+        console.log(this)
+        this.$router.push({
+          name: 'Console'
+        })
       }).catch(error => {
         console.log(error)
       })

@@ -12,6 +12,10 @@ const serve = axios.create({
 // 添加拦截器
 serve.interceptors.request.use(config => {
   // 在发送请求之前做什么
+
+  config.headers.Tokey = '1111'
+  config.headers.userid = '2222'
+  config.headers.sui = '3333'
   return config
 }, error => {
   // 请求失败后该做什么
