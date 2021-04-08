@@ -24,7 +24,10 @@ const routes = [
     name: 'Console',
     redirect: '/index',
     component: () => import('@/views/layout/index'),
-    meta: { name: '控制台' },
+    meta: {
+      name: '控制台',
+      icon: 'el-icon-s-help'
+    },
     children: [
       {
         path: '/index',
@@ -39,7 +42,10 @@ const routes = [
     path: '/info',
     name: 'Info',
     component: () => import('@/views/layout/index'),
-    meta: { name: '信息管理' },
+    meta: {
+      name: '信息管理',
+      icon: 'el-icon-help'
+    },
     children: [
       {
         path: '/infoIndex',
@@ -60,7 +66,10 @@ const routes = [
     path: '/user',
     name: 'User',
     component: () => import('@/views/layout/index'),
-    meta: { name: '用户管理' },
+    meta: {
+      name: '用户管理',
+      icon: 'el-icon-user'
+    },
     children: [
       {
         path: '/userIndex',

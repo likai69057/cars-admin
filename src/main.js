@@ -11,6 +11,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import VueCompositionApi from '@vue/composition-api'
 Vue.use(VueCompositionApi)
 
+// 引入自定义的全局组件 (由于vue默认是runtime模式 无法编译template 需在main.js文件重定向vue模式)
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false

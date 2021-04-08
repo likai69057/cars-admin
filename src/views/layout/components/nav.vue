@@ -12,16 +12,17 @@
     >
       <!-- 由于v-if和v-for不能同时用 可以用template(不会解析的标签, 但是key属性必须绑定到实时渲染的标签上)包裹 -->
       <template v-for="(item,index) in routers">
-        <el-submenu :index="index" v-if="!item.hidden" :key="item.id">
+        <el-submenu :index="index.toString()" v-if="!item.hidden" :key="item.id">
           <!-- 一级菜单  -->
           <template slot="title">
-            <i class="el-icon-location"></i>
+            <i :class="item.meta.icon"></i>
             <span slot="title">{{ item.meta.name }}</span>
           </template>
           <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="subItem.path">{{ subItem.meta.name }}</el-menu-item>
         </el-submenu>
       </template>
     </el-menu>
+    <svg-icon></svg-icon>
   </div>
 </template>
 
