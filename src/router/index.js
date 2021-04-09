@@ -26,7 +26,7 @@ const routes = [
     component: () => import('@/views/layout/index'),
     meta: {
       name: '控制台',
-      icon: 'el-icon-s-help'
+      icon: 'iconfont icon-gongyezujian-yibiaopan'
     },
     children: [
       {
@@ -44,7 +44,7 @@ const routes = [
     component: () => import('@/views/layout/index'),
     meta: {
       name: '信息管理',
-      icon: 'el-icon-help'
+      icon: 'iconfont icon-xinxiguanli'
     },
     children: [
       {
@@ -68,7 +68,7 @@ const routes = [
     component: () => import('@/views/layout/index'),
     meta: {
       name: '用户管理',
-      icon: 'el-icon-user'
+      icon: 'iconfont icon-yonghuguanli'
     },
     children: [
       {

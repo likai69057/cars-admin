@@ -22,7 +22,6 @@
         </el-submenu>
       </template>
     </el-menu>
-    <svg-icon></svg-icon>
   </div>
 </template>
 
@@ -37,18 +36,15 @@ export default {
     const isCollapse = ref(false)
     // 获取路由对象数组
     const routers = reactive(root.$router.options.routes)
-    console.log(routers)
 
     /*
     * 2.0的methods对象
     */
     // 打开导航栏
     const handleOpen = function (key, keyPath) {
-      console.log(key, keyPath)
     }
     // 关闭导航栏
     const handleClose = function (key, keyPath) {
-      console.log(key, keyPath)
     }
 
     // 所有的属性和方法都要return出去
