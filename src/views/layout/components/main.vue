@@ -1,6 +1,8 @@
 <template>
   <div id="main-wrap">
-    <router-view></router-view>
+    <div class="main-content">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -19,5 +21,12 @@ export default {
   bottom: 0px;
   border: 30px solid #f7f7f7;
   border-bottom: none;
+}
+.main-content {
+  width: 100%;
+  height: 100%;
+  padding-left: 30px;
+  padding-top: 30px;
+  box-sizing: border-box;
 }
 </style>

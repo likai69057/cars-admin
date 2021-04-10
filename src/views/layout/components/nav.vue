@@ -1,5 +1,6 @@
 <template>
   <div id="nav-wrap">
+    <img src="@/assets/logo.png" alt="">
     <el-menu
       default-active="1-4-1"
       class="el-menu-vertical-demo"
@@ -26,16 +27,21 @@
 </template>
 
 <script>
-import { ref, reactive } from '@vue/composition-api'
+import { reactive, computed } from '@vue/composition-api'
 export default {
   name: 'Nav',
   setup (props, { root }) {
     /*
     *  2.0的data数据
     */
-    const isCollapse = ref(false)
     // 获取路由对象数组
     const routers = reactive(root.$router.options.routes)
+
+    /**
+     * 2.0的computed监听对象
+     */
+    // 状态管理的控制菜单收起的变量
+    const isCollapse = computed(() => root.$store.state.isCollapse)
 
     /*
     * 2.0的methods对象
@@ -66,6 +72,11 @@ export default {
   width: 250px;
   height: 100vh;
   background-color: #344a5f;
+}
+img {
+  display: block;
+  margin: 28px auto 25px;
+  width: 92px;
 }
 .el-menu{
   border: none;
