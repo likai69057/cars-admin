@@ -37,6 +37,11 @@ export default {
   background-color: #fff;
   box-shadow: 0 3px 16px 0px rgba(0, 0, 0, .1);
   z-index: 1;
+  -webket-transition: all .3s ease 0s;
+  -moz-transition: all .3s ease 0s;
+  -o-transition: all .3s ease 0s;
+  -ms-transition: all .3s ease 0s;
+  transition: all .3s ease 0s;
   .iconfont{
     padding: 0 32px;
     font-size: 24px;
@@ -61,6 +66,16 @@ export default {
       margin: 0;
       font-size: 14px;
     }
+  }
+}
+.open {
+  #header-wrap {
+    left: 250px;
+  }
+}
+.close {
+  #header-wrap {
+    left: 64px;
   }
 }
 </style>

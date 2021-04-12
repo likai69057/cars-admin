@@ -6,8 +6,6 @@
       class="el-menu-vertical-demo"
       text-color="white"
       background-color="#344a5f"
-      @open="handleOpen"
-      @close="handleClose"
       :collapse="isCollapse"
       router
     >
@@ -46,18 +44,10 @@ export default {
     /*
     * 2.0的methods对象
     */
-    // 打开导航栏
-    const handleOpen = function (key, keyPath) {
-    }
-    // 关闭导航栏
-    const handleClose = function (key, keyPath) {
-    }
 
     // 所有的属性和方法都要return出去
     return {
       isCollapse,
-      handleOpen,
-      handleClose,
       routers
     }
   }
@@ -72,6 +62,11 @@ export default {
   width: 250px;
   height: 100vh;
   background-color: #344a5f;
+  -webket-transition: all .3s ease 0s;
+  -moz-transition: all .3s ease 0s;
+  -o-transition: all .3s ease 0s;
+  -ms-transition: all .3s ease 0s;
+  transition: all .3s ease 0s;
 }
 img {
   display: block;
@@ -80,5 +75,19 @@ img {
 }
 .el-menu{
   border: none;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 100%;
+  min-height: 100%;
+}
+.open {
+  #nav-wrap {
+    width: 250px;
+  }
+}
+.close {
+  #nav-wrap {
+    width: 64px;
+  }
 }
 </style>
