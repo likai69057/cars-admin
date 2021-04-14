@@ -72,6 +72,11 @@ img {
   display: block;
   margin: 28px auto 25px;
   width: 92px;
+  -webket-transition: all .3s ease 0s;
+  -moz-transition: all .3s ease 0s;
+  -o-transition: all .3s ease 0s;
+  -ms-transition: all .3s ease 0s;
+  transition: all .3s ease 0s;
 }
 .el-menu{
   border: none;
@@ -88,6 +93,10 @@ img {
 .close {
   #nav-wrap {
     width: 64px;
+    img {
+      margin: 28px auto 25px;
+      width: 70%;
+    }
   }
 }
 </style>

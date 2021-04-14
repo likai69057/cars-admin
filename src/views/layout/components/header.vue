@@ -17,6 +17,7 @@ export default {
   setup (props, { root }) {
     const navMenuState = () => {
       root.$store.commit('setCollapse')
+      // 针对store的action异步处理的调用dispatch函数
     }
 
     return {
