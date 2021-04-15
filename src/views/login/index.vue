@@ -52,7 +52,7 @@
 <script>
 import sha1 from 'js-sha1'
 import { validateUser, validatepass } from '../../utils/validate'
-import { getSms, register, login } from '@/api/login'
+import { getSms, register } from '@/api/login'
 
 export default {
   name: 'Login',
@@ -238,15 +238,8 @@ export default {
         password: sha1(this.ruleForm.password),
         code: this.ruleForm.code
       }
-      login(requestData).then(response => {
-        console.log(response.data)
-        console.log(this)
-        this.$router.push({
-          name: 'Console'
-        })
-      }).catch(error => {
-        console.log(error)
-      })
+      // 通过store的action进行异步处理接口
+      this.$store.dispatch('Login', requestData)
     }
   }
 }

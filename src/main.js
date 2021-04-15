@@ -7,6 +7,9 @@ import '@/style/main.less'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
+// 引入自定义的路由守卫
+import './router/premit'
+
 // 引入vue3.0新特性语法composition API
 import VueCompositionApi from '@vue/composition-api'
 Vue.use(VueCompositionApi)

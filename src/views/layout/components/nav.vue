@@ -39,7 +39,7 @@ export default {
      * 2.0的computed监听对象
      */
     // 状态管理的控制菜单收起的变量
-    const isCollapse = computed(() => root.$store.state.isCollapse)
+    const isCollapse = computed(() => root.$store.state.app.isCollapse)
 
     /*
     * 2.0的methods对象

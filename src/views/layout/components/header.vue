@@ -16,7 +16,8 @@ export default {
   name: 'Header',
   setup (props, { root }) {
     const navMenuState = () => {
-      root.$store.commit('setCollapse')
+      // ** 由于模块化的store的命名空间问题 需要加app/ 路径
+      root.$store.commit('app/setCollapse')
       // 针对store的action异步处理的调用dispatch函数
     }
 

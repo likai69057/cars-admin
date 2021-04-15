@@ -23,7 +23,7 @@ export default {
   // 生命周期全写在里面
   setup (props, { root }) {
     // 3.0的data写法  直接定义变量
-    const navMenuStatus = computed(() => root.$store.state.isCollapse)
+    const navMenuStatus = computed(() => root.$store.state.app.isCollapse)
 
     return {
       navMenuStatus
