@@ -4,7 +4,7 @@
     <div class="pull-right">
       <div class="user-info pull-left">
         <img src="@/assets/imgs/user.jpg" alt="">
-        <p>管理员</p>
+        <p>{{ username }}</p>
       </div>
       <i class="iconfont icon-guanji pull-right"></i>
     </div>
@@ -12,9 +12,14 @@
 </template>
 
 <script>
+import { computed } from '@vue/composition-api'
+
 export default {
   name: 'Header',
   setup (props, { root }) {
+    // 从store中获取username
+    const username = computed(() => root.$store.state.app.username)
+
     const navMenuState = () => {
       // ** 由于模块化的store的命名空间问题 需要加app/ 路径
       root.$store.commit('app/setCollapse')
@@ -22,6 +27,7 @@ export default {
     }
 
     return {
+      username,
       navMenuState
     }
   }
@@ -50,6 +56,7 @@ export default {
     cursor: pointer;
   }
   .user-info{
+    height: 75px;
     display: flex;
     align-items: center;
     padding: 0 32px;

@@ -4,9 +4,14 @@ import { getToken } from '@/utils/app'
 
 router.beforeEach((to, from, next) => {
   if (getToken()) {
-    console.log('token存在')
+    // 从cookie中判断是否存在token 存在就跳转控制台页面
+    next()
   } else {
     // token不存在或者过期
-    next()
+    if (to.path === '/login') {
+      next()
+    } else {
+      next('/login')
+    }
   }
 })

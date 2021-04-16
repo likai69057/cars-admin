@@ -239,7 +239,13 @@ export default {
         code: this.ruleForm.code
       }
       // 通过store的action进行异步处理接口
-      this.$store.dispatch('Login', requestData)
+      this.$store.dispatch('app/Login', requestData).then(response => {
+        this.$router.push({
+          name: 'Console'
+        })
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
 }
