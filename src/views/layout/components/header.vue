@@ -6,7 +6,7 @@
         <img src="@/assets/imgs/user.jpg" alt="">
         <p>{{ username }}</p>
       </div>
-      <i class="iconfont icon-guanji pull-right"></i>
+      <i class="iconfont icon-guanji pull-right" @click="Logout"></i>
     </div>
   </div>
 </template>
@@ -25,10 +25,14 @@ export default {
       root.$store.commit('app/setCollapse')
       // 针对store的action异步处理的调用dispatch函数
     }
+    // 登出按钮方法
+    const Logout = () => {
+    }
 
     return {
       username,
-      navMenuState
+      navMenuState,
+      Logout
     }
   }
 }
