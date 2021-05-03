@@ -52,6 +52,11 @@ const actions = {
         reject(error)
       })
     })
+  },
+  Logout () {
+    return new Promise((resolve, reject) => {
+      resolve()
+    })
   }
 }
 

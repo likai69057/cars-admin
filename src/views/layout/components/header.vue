@@ -27,6 +27,11 @@ export default {
     }
     // 登出按钮方法
     const Logout = () => {
+      root.$store.dispatch('app/Logout').then(() => {
+        root.$router.push({
+          name: 'login'
+        })
+      })
     }
 
     return {
