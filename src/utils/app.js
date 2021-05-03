@@ -11,7 +11,7 @@ export function setToken (value) {
 }
 
 // 删除token数据
-export function removeCookie () {
+export function removeToken () {
   return cookie.remove('admin_token')
 }
 
@@ -23,4 +23,9 @@ export function getUserName () {
 // 从本地cookie中设置存储的username
 export function setUserName (value) {
   return cookie.set('username', value)
+}
+
+// 删除username数据
+export function removeUsername () {
+  return cookie.remove('username')
 }
