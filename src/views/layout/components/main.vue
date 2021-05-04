@@ -31,6 +31,7 @@ export default {
   width: 100%;
   height: 100%;
   padding-left: 30px;
+  padding-right: 30px;
   padding-top: 30px;
   box-sizing: border-box;
 }
