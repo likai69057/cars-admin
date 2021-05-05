@@ -62,8 +62,8 @@
       <el-table-column prop="user" label="管理人" width="80"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="danger" size="mini" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
-          <el-button type="success" size="mini">编辑</el-button>
+          <el-button type="danger" size="mini" @click="deleteItem">删除</el-button>
+          <el-button type="success" size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -71,7 +71,7 @@
     <!-- 底部分页 -->
     <el-row class="foot">
       <el-col :span="12">
-        <el-button size="medium">批量删除</el-button>
+        <el-button size="medium" @click="deleteAll">批量删除</el-button>
       </el-col>
       <el-col :span="12">
         <el-pagination
@@ -99,7 +99,7 @@ export default {
   components: {
     DialogInfo
   },
-  setup (props) {
+  setup (props, { root }) {
     const categoryValue = ref('')
     const dataValue = ref('')
     const searchKey = ref('')
@@ -156,6 +156,23 @@ export default {
     const handleEdit = (index, row) => {
       console.log(index, row)
     }
+    // 表格删除方法
+    const deleteItem = () => {
+      root.confirm({
+        content: '确认删除当前信息？删除后无法恢复！',
+        func: confirmDelete
+      })
+    }
+    // 批量删除方法
+    const deleteAll = () => {
+      root.confirm({
+        content: '确认删除全部信息？删除后无法恢复！',
+        func: confirmDelete
+      })
+    }
+    const confirmDelete = () => {
+      console.log(111)
+    }
     // 分页的方法
     const handleSizeChange = (val) => {
       console.log(`每页 ${val} 条`)
@@ -186,7 +203,9 @@ export default {
       handleEdit,
       handleSizeChange,
       handleCurrentChange,
-      close
+      close,
+      deleteItem,
+      deleteAll
     }
   }
 }
