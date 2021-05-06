@@ -16,7 +16,7 @@
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取消</el-button>
+      <el-button @click="dialogFormVisible=false">取消</el-button>
       <el-button type="danger" @click="dialogFormVisible = false">确定</el-button>
     </div>
   </el-dialog>

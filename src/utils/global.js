@@ -1,3 +1,5 @@
+// 封装好的弹窗API 注册全局原型方法
+
 import { MessageBox, Message } from 'element-ui'
 export default {
   install (Vue, options) {
