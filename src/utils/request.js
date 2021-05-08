@@ -1,6 +1,7 @@
 // 封装axios 拦截器
 import axios from 'axios'
 import { Message } from 'element-ui'
+import { getToken, getUserName } from './app'
 
 // 跨域处理
 const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/devApi'
@@ -12,10 +13,9 @@ const serve = axios.create({
 // 添加拦截器
 serve.interceptors.request.use(config => {
   // 在发送请求之前做什么
-
-  config.headers.Tokey = '1111'
-  config.headers.userid = '2222'
-  config.headers.sui = '3333'
+  // 每次请求接口 都必须传token和username (如果后台要求每次请求都要在请求头传东西)
+  config.headers.Tokey = getToken()
+  config.headers.UserName = getUserName()
   return config
 }, error => {
   // 请求失败后该做什么
