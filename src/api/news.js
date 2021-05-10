@@ -9,3 +9,11 @@ export const addFirstCategory = (data) => {
     data
   })
 }
+
+// 获取一级分类
+export const getFirstCategory = () => {
+  return serve.request({
+    method: 'POST',
+    url: '/news/getCategory/'
+  })
+}
