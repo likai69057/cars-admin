@@ -33,6 +33,7 @@ export default {
   padding-left: 30px;
   padding-top: 30px;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 .open {
   #main-wrap {

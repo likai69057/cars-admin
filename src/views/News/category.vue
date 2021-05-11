@@ -24,7 +24,7 @@
         </el-col>
         <el-col :span="16">
           <h4 class="menu-title">一级分类名称</h4>
-          <el-form class="form-wrap" label-position='right' label-width="120px">
+          <el-form class="form-wrap" label-position='right' label-width="120px" ref="categoryForm">
             <el-form-item label="一级分类名称:" v-if="categoryFirstShow">
               <el-input v-model="form.categoryName"></el-input>
             </el-form-item>
@@ -32,7 +32,7 @@
               <el-input v-model="form.secCategoryName"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="submit">确定</el-button>
+              <el-button type="primary" @click="submit" :loading="buttonLoading">确定</el-button>
             </el-form-item>
           </el-form>
         </el-col>
@@ -46,11 +46,13 @@ import { reactive, ref, onMounted } from '@vue/composition-api'
 import { addFirstCategory, getFirstCategory } from '@/api/news'
 export default {
   name: 'category',
-  setup (props, { root }) {
+  setup (props, { root, refs }) {
     // 控制一级分类的显示
     const categoryFirstShow = ref(true)
     // 控制二级分类的显示
     const categoryChildrenShow = ref(true)
+    // 控制提交按钮的loading状态
+    const buttonLoading = ref(false)
     // 一二级分类输入框的绑定数据
     const form = reactive({
       categoryName: '',
@@ -69,17 +71,21 @@ export default {
 
     // 添加一级分类
     const submit = () => {
+      buttonLoading.value = true
       if (form.categoryName) {
         addFirstCategory({ categoryName: form.categoryName }).then(response => {
           const data = response.data
           // 添加一级分类之后 在页面直接获取一级分类
-          category.item.push({ categoryName: form.categoryName })
+          category.item.push(response.data.data)
+          buttonLoading.value = false
+          refs.categoryForm.resetFields()
           root.$message({
             message: data.message,
             type: 'success'
           })
         }).catch(error => {
           console.log(error)
+          buttonLoading.value = false
         })
       } else {
         root.$message({
@@ -109,6 +115,7 @@ export default {
       // ref
       categoryFirstShow,
       categoryChildrenShow,
+      buttonLoading,
       // reactive
       form,
       category,
