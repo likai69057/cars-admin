@@ -1,6 +1,6 @@
 <template>
   <div id="category">
-    <el-button type="danger" @click="addFirst">添加一级分类</el-button>
+    <el-button type="danger" @click="ShowFirst">添加一级分类</el-button>
     <hr style="margin: 30px -30px"/>
     <div>
       <el-row :gutter="30">
@@ -13,7 +13,7 @@
                 <div class="button-group">
                   <el-button type="danger" size="mini" round>编辑</el-button>
                   <el-button type="success" size="mini" round>添加子集</el-button>
-                  <el-button size="mini" round>删除</el-button>
+                  <el-button size="mini" round @click="deleteFirstCategory(item.id)">删除</el-button>
                 </div>
               </h4>
               <ul v-if="item.children">
@@ -26,13 +26,20 @@
           <h4 class="menu-title">一级分类名称</h4>
           <el-form class="form-wrap" label-position='right' label-width="120px" ref="categoryForm">
             <el-form-item label="一级分类名称:" v-if="categoryFirstShow">
-              <el-input v-model="form.categoryName"></el-input>
+              <el-input v-model="form.categoryName" :disabled="categoryFirstForbidden"></el-input>
             </el-form-item>
             <el-form-item label="二级分类名称:" v-if="categoryChildrenShow">
-              <el-input v-model="form.secCategoryName"></el-input>
+              <el-input v-model="form.secCategoryName" :disabled="categorySecForbidden"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="submit" :loading="buttonLoading">确定</el-button>
+              <el-button
+                type="primary"
+                @click="submit"
+                :loading="buttonLoading"
+                :disabled="categoryButtonForbidden"
+              >
+                确定
+              </el-button>
             </el-form-item>
           </el-form>
         </el-col>
@@ -43,14 +50,20 @@
 
 <script>
 import { reactive, ref, onMounted } from '@vue/composition-api'
-import { addFirstCategory, getFirstCategory } from '@/api/news'
+import { addFirstCategory, getFirstCategory, deleteCategory } from '@/api/news'
 export default {
   name: 'category',
   setup (props, { root, refs }) {
-    // 控制一级分类的显示
+    // 控制一级分类的显示与隐藏
     const categoryFirstShow = ref(true)
-    // 控制二级分类的显示
+    // 控制一级分类输入框的禁用状态
+    const categoryFirstForbidden = ref(true)
+    // 控制二级分类的显示与隐藏
     const categoryChildrenShow = ref(true)
+    // 控制二级分类输入框的禁用状态
+    const categorySecForbidden = ref(true)
+    // 控制提交按钮的禁用状态
+    const categoryButtonForbidden = ref(true)
     // 控制提交按钮的loading状态
     const buttonLoading = ref(false)
     // 一二级分类输入框的绑定数据
@@ -64,12 +77,14 @@ export default {
     })
 
     // 控制添加一级分类的显示
-    const addFirst = () => {
+    const ShowFirst = () => {
       categoryFirstShow.value = true
       categoryChildrenShow.value = false
+      categoryFirstForbidden.value = false
+      categoryButtonForbidden.value = false
     }
 
-    // 添加一级分类
+    // 添加一级分类的提交
     const submit = () => {
       buttonLoading.value = true
       if (form.categoryName) {
@@ -78,7 +93,8 @@ export default {
           // 添加一级分类之后 在页面直接获取一级分类
           category.item.push(response.data.data)
           buttonLoading.value = false
-          refs.categoryForm.resetFields()
+          form.categoryName = ''
+          form.secCategoryName = ''
           root.$message({
             message: data.message,
             type: 'success'
@@ -95,11 +111,28 @@ export default {
       }
     }
 
+    // 删除一级分类
+    const deleteFirstCategory = (categoryId) => {
+      deleteCategory({ categoryId: categoryId }).then(response => {
+        const data = response.data
+        console.log(category.item)
+        category.item.filter(item => {
+          return item.id !== categoryId
+        })
+        console.log(category.item)
+        root.$message({
+          message: data.message,
+          type: 'success'
+        })
+      }).catch(err => {
+        console.log(err)
+      })
+    }
+
     // 获取一级分类
     const getCategory = () => {
       getFirstCategory().then(response => {
         const data = response.data.data.data
-        console.log(data)
         category.item = data
       }).catch(error => {
         console.log(error)
@@ -116,12 +149,16 @@ export default {
       categoryFirstShow,
       categoryChildrenShow,
       buttonLoading,
+      categoryFirstForbidden,
+      categorySecForbidden,
+      categoryButtonForbidden,
       // reactive
       form,
       category,
       // method
       submit,
-      addFirst
+      ShowFirst,
+      deleteFirstCategory
     }
   }
 }

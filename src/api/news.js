@@ -17,3 +17,12 @@ export const getFirstCategory = () => {
     url: '/news/getCategory/'
   })
 }
+
+// 一级分类删除
+export const deleteCategory = (data) => {
+  return serve.request({
+    method: 'POST',
+    url: '/news/deleteCategory/',
+    data
+  })
+}
