@@ -11,7 +11,7 @@
               <h4>
                 {{ item.category_name }}
                 <div class="button-group">
-                  <el-button type="danger" size="mini" round>编辑</el-button>
+                  <el-button type="danger" size="mini" round @click="editFirstCategory({ data: item })">编辑</el-button>
                   <el-button type="success" size="mini" round>添加子集</el-button>
                   <el-button size="mini" round @click="deleteFirstCategory(item.id)">删除</el-button>
                 </div>
@@ -66,6 +66,8 @@ export default {
     const categoryButtonForbidden = ref(true)
     // 控制提交按钮的loading状态
     const buttonLoading = ref(false)
+    // 由于提交按钮在添加一级分类、编辑、添加二级分类都是同一个 为了区分
+    const submitType = ref('')
     // 一二级分类输入框的绑定数据
     const form = reactive({
       categoryName: '',
@@ -82,6 +84,8 @@ export default {
       categoryChildrenShow.value = false
       categoryFirstForbidden.value = false
       categoryButtonForbidden.value = false
+
+      submitType.value = 'firstCategoryAdd'
     }
 
     // 添加一级分类的提交
@@ -128,6 +132,15 @@ export default {
       })
     }
 
+    // 编辑一级分类
+    const editFirstCategory = (params) => {
+      submitType.value = 'firstCategoryEdit'
+      // 1.点击编辑按钮 右侧的一级分类显示方法先调用
+      ShowFirst()
+      // 2.输入框获取到一级分类并显示
+      form.categoryName = params.data.categoryName
+    }
+
     // 获取一级分类
     const getCategory = () => {
       getFirstCategory().then(response => {
@@ -151,13 +164,15 @@ export default {
       categoryFirstForbidden,
       categorySecForbidden,
       categoryButtonForbidden,
+      submitType,
       // reactive
       form,
       category,
       // method
       submit,
       ShowFirst,
-      deleteFirstCategory
+      deleteFirstCategory,
+      editFirstCategory
     }
   }
 }
