@@ -7,7 +7,7 @@ export default {
       MessageBox.confirm(params.content, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: params.type || 'warning',
         center: true
       }).then(() => {
         if (params.func) {

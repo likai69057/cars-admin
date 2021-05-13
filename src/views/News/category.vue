@@ -113,19 +113,18 @@ export default {
 
     // 删除一级分类
     const deleteFirstCategory = (categoryId) => {
-      deleteCategory({ categoryId: categoryId }).then(response => {
-        const data = response.data
-        console.log(category.item)
-        category.item.filter(item => {
-          return item.id !== categoryId
-        })
-        console.log(category.item)
-        root.$message({
-          message: data.message,
-          type: 'success'
-        })
-      }).catch(err => {
-        console.log(err)
+      root.confirm({
+        content: '确认删除当前信息？删除后无法恢复！',
+        func: () => {
+          deleteCategory({ categoryId: categoryId }).then(response => {
+            const index = category.item.findIndex(item => {
+              return item.id === categoryId
+            })
+            category.item.splice(index, 1)
+          }).catch(err => {
+            console.log(err)
+          })
+        }
       })
     }
 
