@@ -11,7 +11,7 @@
               <h4>
                 {{ item.category_name }}
                 <div class="button-group">
-                  <el-button type="danger" size="mini" round @click="editFirstCategory({ data: item })">编辑</el-button>
+                  <el-button type="danger" size="mini" round @click="editFirstCategoryBtn({ data: item })">编辑</el-button>
                   <el-button type="success" size="mini" round>添加子集</el-button>
                   <el-button size="mini" round @click="deleteFirstCategory(item.id)">删除</el-button>
                 </div>
@@ -50,7 +50,7 @@
 
 <script>
 import { reactive, ref, onMounted } from '@vue/composition-api'
-import { addFirstCategory, getFirstCategory, deleteCategory } from '@/api/news'
+import { addFirstCategory, getFirstCategory, deleteCategory, editCategory } from '@/api/news'
 export default {
   name: 'category',
   setup (props, { root, refs }) {
@@ -75,12 +75,14 @@ export default {
     })
     // vue3.0写法的reactive中最好存储jason格式的对象 不建议直接写数组
     const category = reactive({
-      item: []
+      // 所有category对象的数组
+      item: [],
+      // 编辑选中的当前对象
+      current: []
     })
 
     // 控制添加一级分类的显示
     const ShowFirst = () => {
-      categoryFirstShow.value = true
       categoryChildrenShow.value = false
       categoryFirstForbidden.value = false
       categoryButtonForbidden.value = false
@@ -88,9 +90,21 @@ export default {
       submitType.value = 'firstCategoryAdd'
     }
 
-    // 添加一级分类的提交
+    // 提交按钮的方法
     const submit = () => {
       buttonLoading.value = true
+      // 提交之前先判断一下提交的类型是什么 添加一级、添加二级、编辑
+      if (submitType.value === 'firstCategoryAdd') {
+        addFirst()
+      }
+      if (submitType.value === 'firstCategoryEdit') {
+        // 完成编辑之后的替换
+        editFirstCategory()
+      }
+    }
+
+    // 添加一级分类
+    const addFirst = () => {
       if (form.categoryName) {
         addFirstCategory({ categoryName: form.categoryName }).then(response => {
           const data = response.data
@@ -132,13 +146,55 @@ export default {
       })
     }
 
-    // 编辑一级分类
-    const editFirstCategory = (params) => {
+    // 编辑一级分类按钮方法
+    const editFirstCategoryBtn = (params) => {
       submitType.value = 'firstCategoryEdit'
       // 1.点击编辑按钮 右侧的一级分类显示方法先调用
-      ShowFirst()
+      categoryChildrenShow.value = false
+      categoryFirstForbidden.value = false
+      categoryButtonForbidden.value = false
       // 2.输入框获取到一级分类并显示
-      form.categoryName = params.data.categoryName
+      form.categoryName = params.data.category_name
+      // 3.把点击的item传入category的current数组
+      category.current = params.data
+    }
+
+    // 编辑一级分类完成替换
+    const editFirstCategory = () => {
+      if (category.current.length === 0) {
+        root.$message({
+          message: '分类名称不能为空！',
+          type: 'success'
+        })
+        buttonLoading.value = false
+        return false
+      }
+      const requestData = {
+        id: category.current.id,
+        categoryName: form.categoryName
+      }
+      editCategory(requestData).then(response => {
+        const data = response.data
+        root.$message({
+          message: data.message,
+          type: 'success'
+        })
+        category.item.forEach(item => {
+          if (item.id === category.current.id) {
+            item.category_name = form.categoryName
+          }
+        })
+        // 清空输入框的内容和loading状态以及直接存储的current
+        form.categoryName = ''
+        buttonLoading.value = false
+        category.current = []
+      }).catch(err => {
+        // 清空输入框的内容和loading状态以及直接存储的current
+        form.categoryName = ''
+        buttonLoading.value = false
+        category.current = []
+        console.log(err)
+      })
     }
 
     // 获取一级分类
@@ -172,7 +228,8 @@ export default {
       submit,
       ShowFirst,
       deleteFirstCategory,
-      editFirstCategory
+      editFirstCategoryBtn,
+      addFirst
     }
   }
 }

@@ -26,3 +26,12 @@ export const deleteCategory = (data) => {
     data
   })
 }
+
+// 一级分类修改
+export const editCategory = (data) => {
+  return serve.request({
+    method: 'POST',
+    url: '/news/editCategory/',
+    data
+  })
+}
