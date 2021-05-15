@@ -6,10 +6,10 @@
           <el-form-item label="类型:">
             <el-select v-model="categoryValue" placeholder="请选择" style="width: 100px">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="item in options.categoryOptions"
+                :key="item.id"
+                :label="item.category_name"
+                :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -92,8 +92,10 @@
 </template>
 
 <script>
-import { reactive, ref } from '@vue/composition-api'
+import { reactive, ref, onMounted, watch } from '@vue/composition-api'
 import DialogInfo from './dialog/info'
+import { common } from '../../api/common'
+
 export default {
   name: 'News',
   components: {
@@ -104,22 +106,12 @@ export default {
     const dataValue = ref('')
     const searchKey = ref('')
     const searchKeyWord = ref('')
+    const { getCategory, categoryItem } = common()
 
     // 类型数据
-    const options = reactive([
-      {
-        value: '1',
-        label: '国外信息'
-      },
-      {
-        value: '2',
-        label: '国内信息'
-      },
-      {
-        value: '3',
-        label: '行业信息'
-      }
-    ])
+    const options = reactive({
+      categoryOptions: []
+    })
     // 搜索关键字数据
     const searchOptions = reactive([
       { value: 'id', label: 'ID' },
@@ -187,6 +179,15 @@ export default {
     const close = (val) => {
       dialogInfo.value = val
     }
+
+    // 页面加载完成后获取一级分类
+    onMounted(() => {
+      getCategory()
+    })
+    // 监听传入的category
+    watch(() => categoryItem.item, (value) => {
+      options.categoryOptions = value
+    })
 
     return {
       // ref

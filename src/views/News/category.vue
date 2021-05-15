@@ -49,8 +49,10 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from '@vue/composition-api'
-import { addFirstCategory, getFirstCategory, deleteCategory, editCategory } from '@/api/news'
+import { reactive, ref, onMounted, watch } from '@vue/composition-api'
+import { addFirstCategory, deleteCategory, editCategory } from '@/api/news'
+import { common } from '../../api/common'
+
 export default {
   name: 'category',
   setup (props, { root, refs }) {
@@ -126,6 +128,7 @@ export default {
           message: '分类名称不能为空！',
           type: 'error'
         })
+        buttonLoading.value = false
       }
     }
 
@@ -161,10 +164,10 @@ export default {
 
     // 编辑一级分类完成替换
     const editFirstCategory = () => {
-      if (category.current.length === 0) {
+      if (form.categoryName === '') {
         root.$message({
           message: '分类名称不能为空！',
-          type: 'success'
+          type: 'warning'
         })
         buttonLoading.value = false
         return false
@@ -198,15 +201,12 @@ export default {
     }
 
     // 获取一级分类
-    const getCategory = () => {
-      getFirstCategory().then(response => {
-        const data = response.data.data.data
-        category.item = data
-      }).catch(error => {
-        console.log(error)
-      })
-    }
-
+    const { getCategory, categoryItem } = common()
+    // 监听传入的category
+    watch(() => categoryItem.item, (value) => {
+      console.log(value)
+      category.item = value
+    })
     // 获取一级分类之后 在页面加载完成之后直接调用
     onMounted(() => {
       getCategory()

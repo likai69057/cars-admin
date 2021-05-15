@@ -42,7 +42,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       // 调用封装好的接口
       login(requestData).then(response => {
-        console.log(response.data.data)
         const data = response.data.data
         // 接口调用成功后将返回的数据存储到本地cookie
         content.commit('SET_TOKEN', data.token)
