@@ -35,3 +35,12 @@ export const editCategory = (data) => {
     data
   })
 }
+
+// 新增信息
+export const addInfo = (data) => {
+  return serve.request({
+    method: 'POST',
+    url: '/news/add/',
+    data
+  })
+}

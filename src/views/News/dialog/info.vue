@@ -1,11 +1,14 @@
 <template>
   <!-- 新增弹窗 -->
-  <el-dialog title="新增" :visible.sync="dialogInfoFlag" :modal-append-to-body="false" @close="close(dialogInfoFlag)" width="580px">
+  <el-dialog title="新增" :visible.sync="dialogInfoFlag" :modal-append-to-body="false" @opened="openDialog" @close="close(dialogInfoFlag)" width="580px">
     <el-form :model="form">
       <el-form-item label="类别:" :label-width="formLabelWidth">
-        <el-select v-model="form.region" placeholder="请选择">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+        <el-select v-model="form.category" placeholder="请选择">
+          <el-option
+            v-for="item in categoryOptions"
+            :key="item.id"
+            :label="item.category_name"
+            :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="标题:" :label-width="formLabelWidth">
@@ -23,12 +26,18 @@
 </template>
 
 <script>
+// import { addInfo } from '../../../api/news'
+
 export default {
   name: 'Dialog',
   props: {
     dialogInfo: {
       type: Boolean,
       default: false
+    },
+    category: {
+      type: Array,
+      default: () => []
     }
   },
   // 监听父传子的值
@@ -46,20 +55,21 @@ export default {
       dialogFormVisible: true,
       form: {
         name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+        category: ''
       },
-      formLabelWidth: '70px'
+      formLabelWidth: '70px',
+      categoryOptions: []
     }
   },
   methods: {
+    // 关闭弹窗
     close (val) {
       this.$emit('close', val)
+    },
+    // 打开弹窗获取一级分类的name
+    openDialog () {
+      console.log(this.category)
+      this.categoryOptions = this.category
     }
   }
 }

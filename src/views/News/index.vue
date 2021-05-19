@@ -87,7 +87,7 @@
     </el-row>
 
     <!-- 新增弹窗 -->
-    <dialog-info :dialogInfo="dialogInfo" @close="close"/>
+    <dialog-info :dialogInfo="dialogInfo" :category="options.categoryOptions" @close="close"/>
   </div>
 </template>
 
