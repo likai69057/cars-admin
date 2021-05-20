@@ -54,11 +54,11 @@
       </el-row>
     </el-form>
     <!-- 表格数据 -->
-    <el-table class="table" :data="tableData" border style="width: 100%">
+    <el-table class="table" :data="tableData.item" border v-loading="loading" style="width: 100%">
       <el-table-column type="selection" width="45"></el-table-column>
       <el-table-column prop="title" label="标题" width="500"></el-table-column>
-      <el-table-column prop="category" label="类型" width="80"></el-table-column>
-      <el-table-column prop="date" label="日期" width="150"></el-table-column>
+      <el-table-column prop="categoryId" label="类型" width="80"></el-table-column>
+      <el-table-column prop="createDate" label="日期" width="150" :formatter="toDate"></el-table-column>
       <el-table-column prop="user" label="管理人" width="80"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -81,7 +81,7 @@
           @current-change="handleCurrentChange"
           layout="total, sizes, prev, pager, next, jumper"
           :page-sizes="[10, 20, 50, 100]"
-          :total="1000">
+          :total="total">
         </el-pagination>
       </el-col>
     </el-row>
@@ -95,6 +95,8 @@
 import { reactive, ref, onMounted, watch } from '@vue/composition-api'
 import DialogInfo from './dialog/info'
 import { common } from '../../api/common'
+import { getInfoList } from '../../api/news'
+import { timestampToTime } from '../../utils/common'
 
 export default {
   name: 'News',
@@ -107,6 +109,15 @@ export default {
     const searchKey = ref('')
     const searchKeyWord = ref('')
     const { getCategory, categoryItem } = common()
+    // 总信息条数
+    const total = ref(null)
+    // 页码和每页条数
+    const page = reactive({
+      pageNumber: 1,
+      pageSize: 10
+    })
+    // 控制表格数据加载
+    const loading = ref(false)
 
     // 类型数据
     const options = reactive({
@@ -118,32 +129,37 @@ export default {
       { value: 'title', label: '标题' }
     ])
     // 表格数据
-    const tableData = reactive([
-      {
-        title: '按商品房pose爱福家频道搜积分【破三等奖地方上大分是的佛教是对方是否',
-        category: '王小虎',
-        date: '2016-05-02',
-        user: '用户'
-      },
-      {
-        title: '上大分kgPDFPDF截个屏【刀具柜东方国际PDF感觉【片尾曲儿千瓦时卡萨形成自行车在周星驰',
-        category: '王小虎',
-        date: '2016-05-02',
-        user: '用户'
-      },
-      {
-        title: '是搭配购机票无二的会计法v 我乳房top苏东坡【 骗【哦女警嘘【破解',
-        category: '王小虎',
-        date: '2016-05-02',
-        user: '用户'
-      },
-      {
-        title: '儿破【跑快点发票搜地方小棕瓶零库存【平走出跑到上大分',
-        category: '王小虎',
-        date: '2016-05-02',
-        user: '用户'
+    const tableData = reactive({
+      item: []
+    })
+
+    // 获取信息列表
+    const GetInfoList = () => {
+      const requestData = {
+        categoryId: '',
+        startTime: '',
+        endTime: '',
+        title: '',
+        id: '',
+        pageNumber: page.pageNumber,
+        pageSize: page.pageSize
       }
-    ])
+      loading.value = true
+      getInfoList(requestData).then(response => {
+        const data = response.data.data
+        total.value = data.total
+        tableData.item = data.data
+        loading.value = false
+      }).catch(err => {
+        console.log(err)
+        loading.value = false
+      })
+    }
+
+    // 转换时间戳
+    const toDate = row => {
+      return timestampToTime(row.createDate)
+    }
     // 表格编辑方法
     const handleEdit = (index, row) => {
       console.log(index, row)
@@ -167,10 +183,14 @@ export default {
     }
     // 分页的方法
     const handleSizeChange = (val) => {
-      console.log(`每页 ${val} 条`)
+      page.pageSize = val
+      console.log(page.pageSize)
+      GetInfoList()
     }
     const handleCurrentChange = (val) => {
-      console.log(`当前页: ${val}`)
+      page.pageNumber = val
+      console.log(page.pageNumber)
+      GetInfoList()
     }
 
     // 控制弹窗的属性
@@ -183,6 +203,7 @@ export default {
     // 页面加载完成后获取一级分类
     onMounted(() => {
       getCategory()
+      GetInfoList()
     })
     // 监听传入的category
     watch(() => categoryItem.item, (value) => {
@@ -196,6 +217,9 @@ export default {
       searchKey,
       searchKeyWord,
       dialogInfo,
+      total,
+      page,
+      loading,
       // reactive
       options,
       searchOptions,
@@ -206,7 +230,9 @@ export default {
       handleCurrentChange,
       close,
       deleteItem,
-      deleteAll
+      deleteAll,
+      GetInfoList,
+      toDate
     }
   }
 }

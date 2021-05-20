@@ -44,3 +44,12 @@ export const addInfo = (data) => {
     data
   })
 }
+
+// 获取信息列表
+export const getInfoList = (data) => {
+  return serve.request({
+    method: 'POST',
+    url: '/news/getList/',
+    data
+  })
+}
