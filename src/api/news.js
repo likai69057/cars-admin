@@ -53,3 +53,12 @@ export const getInfoList = (data) => {
     data
   })
 }
+
+// 删除信息列表
+export const deleteInfoList = (data) => {
+  return serve.request({
+    method: 'POST',
+    url: '/news/deleteInfo/',
+    data
+  })
+}

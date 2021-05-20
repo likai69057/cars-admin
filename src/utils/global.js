@@ -1,6 +1,6 @@
 // 封装好的弹窗API 注册全局原型方法
 
-import { MessageBox, Message } from 'element-ui'
+import { MessageBox } from 'element-ui'
 export default {
   install (Vue, options) {
     Vue.prototype.confirm = (params) => {
@@ -11,17 +11,12 @@ export default {
         center: true
       }).then(() => {
         if (params.func) {
-          params.func()
+          params.func(params.id || '')
         }
-        Message({
-          type: 'success',
-          message: '删除成功!'
-        })
       }).catch(() => {
-        Message({
-          type: 'info',
-          message: '已取消删除'
-        })
+        if (params.catchFn) {
+          params.catchFn(params.id || '')
+        }
       })
     }
   }
