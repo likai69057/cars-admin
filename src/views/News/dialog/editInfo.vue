@@ -1,7 +1,7 @@
 <template>
   <!-- 新增弹窗 -->
-  <el-dialog title="编辑" :visible.sync="dialogInfoFlag" :modal-append-to-body="false" @opened="openDialog" @close="close(dialogInfoFlag)" width="580px">
-      <el-form :model="form" ref="addInfoForm">
+  <el-dialog title="编辑" :visible.sync="dialogInfoFlag" :modal-append-to-body="false" @open="openDialog" @close="close(dialogInfoFlag)" width="580px">
+      <el-form :model="form" ref="editInfoForm">
       <el-form-item label="类别:" :label-width="formLabelWidth" prop="category">
         <el-select v-model="form.category" placeholder="请选择">
           <el-option
@@ -14,7 +14,7 @@
       <el-form-item label="标题:" :label-width="formLabelWidth" prop="title">
         <el-input v-model="form.title" placeholder="请输入内容"></el-input>
       </el-form-item>
-      <el-form-item label="概况:" :label-width="formLabelWidth" prop="content">
+      <el-form-item label="内容:" :label-width="formLabelWidth" prop="content">
         <el-input v-model="form.content" type="textarea" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
@@ -30,15 +30,21 @@ import { addInfo } from '../../../api/news'
 import { reactive, ref, watch } from '@vue/composition-api'
 
 export default {
-  name: 'EditDialog',
+  name: 'Dialog',
   props: {
-    dialogInfo: {
+    editDialogInfo: {
       type: Boolean,
       default: false
     },
     category: {
       type: Array,
       default: () => []
+    },
+    editDialogInfoObj: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   setup (props, { root, emit, refs }) {
@@ -59,12 +65,21 @@ export default {
     // 关闭弹窗
     const close = (val) => {
       dialogInfoFlag.value = false
-      emit('close', val)
+      emit('closeEdit', val)
     }
     // 打开弹窗获取一级分类的name
     const openDialog = () => {
       categoryOptions.item = props.category
+      // 将父组件传给子组件的编辑对象的categoryId与category的id(categoryId)对比 获取categoryName
+      const categoryData = props.category.filter(item => {
+        return item.id === props.editDialogInfoObj.categoryId
+      })
+      console.log(props.editDialogInfoObj)
+      form.category = categoryData[0].category_name
+      form.title = props.editDialogInfoObj.title
+      form.content = props.editDialogInfoObj.content
     }
+
     // 提交方法
     const submit = () => {
       const requestData = {
@@ -112,12 +127,12 @@ export default {
     }
     // 取消
     const cancel = () => {
-      refs.addInfoForm.resetFields()
+      refs.editInfoForm.resetFields()
       dialogInfoFlag.value = false
     }
 
-    watch(() => props.dialogInfo, () => {
-      dialogInfoFlag.value = props.dialogInfo
+    watch(() => props.editDialogInfo, () => {
+      dialogInfoFlag.value = props.editDialogInfo
     })
 
     return {

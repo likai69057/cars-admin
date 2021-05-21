@@ -71,9 +71,10 @@
       <el-table-column prop="user" label="管理人" width="80"></el-table-column>
       <el-table-column label="操作">
       <!-- 需要注意的一点 表格内部要写html5标签 必须包一层template标签 -->
+      <!-- 通过slot-scope可以获取到对应行的数据对象 -->
         <template slot-scope="scope">
           <el-button type="danger" size="mini" @click="deleteItem(scope.row.id)">删除</el-button>
-          <el-button type="success" size="mini" @click="editInfo(scope.row.id)">编辑</el-button>
+          <el-button type="success" size="mini" @click="EditDialogInfo(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -99,7 +100,7 @@
     <!-- 新增弹窗 -->
     <dialog-info :dialogInfo="dialogInfo" :category="options.categoryOptions" @close="close"/>
     <!-- 编辑弹窗 -->
-    <edit-dialog-info :dialogInfo="editDialogInfo" :editInfoId="editInfoId" :category="options.categoryOptions" @close="close"/>
+    <edit-dialog-info :editDialogInfo="editDialogInfo" :category="options.categoryOptions" :editDialogInfoObj="editDialogInfoObj" @closeEdit="closeEdit"/>
   </div>
 </template>
 
@@ -132,8 +133,8 @@ export default {
     })
     // 信息id Number类型
     const deleteInfoId = ref(null)
-    // 点击编辑按钮传递给子组件用于获取表格对应元素的id
-    const editInfoId = ref([null])
+    // 编辑选中的对应元素对象
+    const editDialogInfoObj = ref({})
 
     // 控制表格数据加载
     const loading = ref(false)
@@ -202,12 +203,11 @@ export default {
       })[0]
       return categoryData.category_name
     }
-
     // 表格编辑方法
-    const editInfo = (categoryId) => {
-      console.log(categoryId)
+    const EditDialogInfo = (id) => {
       editDialogInfo.value = true
-      console.log(editDialogInfo.value)
+      // 点击编辑后获得对应的元素对象
+      editDialogInfoObj.value = id
     }
     // 表格删除方法
     const deleteItem = (id) => {
@@ -273,9 +273,12 @@ export default {
     const dialogInfo = ref(false)
     // 控制编辑弹窗的属性
     const editDialogInfo = ref(false)
-    // 接受子传父的值并修改父组件的值
+    // 接受子传父的值并修改父组件的值 关闭新增弹窗
     const close = (val) => {
       dialogInfo.value = val
+    }
+    const closeEdit = (val) => {
+      editDialogInfo.value = val
     }
 
     // 页面加载完成后获取一级分类
@@ -296,27 +299,28 @@ export default {
       searchKeyWord,
       dialogInfo,
       editDialogInfo,
+      editDialogInfoObj,
       total,
       page,
       loading,
       deleteInfoId,
-      editInfoId,
       // reactive
       options,
       searchOptions,
       tableData,
       // methods
-      editInfo,
       handleSizeChange,
       handleCurrentChange,
       close,
+      closeEdit,
       deleteItem,
       deleteAll,
       GetInfoList,
       toDate,
       toCategory,
       handleSelectionChange,
-      search
+      search,
+      EditDialogInfo
     }
   }
 }

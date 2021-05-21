@@ -14,7 +14,7 @@
       <el-form-item label="标题:" :label-width="formLabelWidth" prop="title">
         <el-input v-model="form.title" placeholder="请输入内容"></el-input>
       </el-form-item>
-      <el-form-item label="概况:" :label-width="formLabelWidth" prop="content">
+      <el-form-item label="内容:" :label-width="formLabelWidth" prop="content">
         <el-input v-model="form.content" type="textarea" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
