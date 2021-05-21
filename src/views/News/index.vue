@@ -73,7 +73,7 @@
       <!-- 需要注意的一点 表格内部要写html5标签 必须包一层template标签 -->
         <template slot-scope="scope">
           <el-button type="danger" size="mini" @click="deleteItem(scope.row.id)">删除</el-button>
-          <el-button type="success" size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="success" size="mini" @click="editInfo(scope.row.id)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -98,12 +98,15 @@
 
     <!-- 新增弹窗 -->
     <dialog-info :dialogInfo="dialogInfo" :category="options.categoryOptions" @close="close"/>
+    <!-- 编辑弹窗 -->
+    <edit-dialog-info :dialogInfo="editDialogInfo" :editInfoId="editInfoId" :category="options.categoryOptions" @close="close"/>
   </div>
 </template>
 
 <script>
 import { reactive, ref, onMounted, watch } from '@vue/composition-api'
 import DialogInfo from './dialog/info'
+import EditDialogInfo from './dialog/editInfo'
 import { common } from '../../api/common'
 import { getInfoList, deleteInfoList } from '../../api/news'
 import { timestampToTime } from '../../utils/common'
@@ -111,7 +114,8 @@ import { timestampToTime } from '../../utils/common'
 export default {
   name: 'News',
   components: {
-    DialogInfo
+    DialogInfo,
+    EditDialogInfo
   },
   setup (props, { root }) {
     const categoryValue = ref('')
@@ -128,9 +132,11 @@ export default {
     })
     // 信息id Number类型
     const deleteInfoId = ref(null)
+    // 点击编辑按钮传递给子组件用于获取表格对应元素的id
+    const editInfoId = ref([null])
+
     // 控制表格数据加载
     const loading = ref(false)
-
     // 类型数据
     const options = reactive({
       categoryOptions: []
@@ -198,8 +204,10 @@ export default {
     }
 
     // 表格编辑方法
-    const handleEdit = (index, row) => {
-      console.log(index, row)
+    const editInfo = (categoryId) => {
+      console.log(categoryId)
+      editDialogInfo.value = true
+      console.log(editDialogInfo.value)
     }
     // 表格删除方法
     const deleteItem = (id) => {
@@ -261,8 +269,10 @@ export default {
       GetInfoList()
     }
 
-    // 控制弹窗的属性
+    // 控制新增弹窗的属性
     const dialogInfo = ref(false)
+    // 控制编辑弹窗的属性
+    const editDialogInfo = ref(false)
     // 接受子传父的值并修改父组件的值
     const close = (val) => {
       dialogInfo.value = val
@@ -285,16 +295,18 @@ export default {
       searchKey,
       searchKeyWord,
       dialogInfo,
+      editDialogInfo,
       total,
       page,
       loading,
       deleteInfoId,
+      editInfoId,
       // reactive
       options,
       searchOptions,
       tableData,
       // methods
-      handleEdit,
+      editInfo,
       handleSizeChange,
       handleCurrentChange,
       close,
