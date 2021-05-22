@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { addInfo } from '../../../api/news'
+import { addInfo, editInfo } from '../../../api/news'
 import { reactive, ref, watch } from '@vue/composition-api'
 
 export default {
@@ -57,6 +57,7 @@ export default {
       item: []
     })
     const form = reactive({
+      id: '',
       category: '',
       title: '',
       content: ''
@@ -67,7 +68,7 @@ export default {
       dialogInfoFlag.value = false
       emit('closeEdit', val)
     }
-    // 打开弹窗获取一级分类的name
+    // 打开弹窗获取编辑对象和分类列表
     const openDialog = () => {
       categoryOptions.item = props.category
       // 将父组件传给子组件的编辑对象的categoryId与category的id(categoryId)对比 获取categoryName
@@ -78,11 +79,13 @@ export default {
       form.category = categoryData[0].category_name
       form.title = props.editDialogInfoObj.title
       form.content = props.editDialogInfoObj.content
+      form.id = props.editDialogInfoObj.id
     }
 
     // 提交方法
     const submit = () => {
       const requestData = {
+        id: form.id,
         categoryId: form.category,
         title: form.title,
         content: form.content
@@ -109,7 +112,7 @@ export default {
         return false
       }
       submitLoading.value = true
-      addInfo(requestData).then(response => {
+      editInfo(requestData).then(response => {
         console.log(response)
         root.$message({
           message: response.data.message,
