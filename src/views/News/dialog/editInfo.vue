@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { addInfo, editInfo } from '../../../api/news'
+import { editInfo } from '../../../api/news'
 import { reactive, ref, watch } from '@vue/composition-api'
 
 export default {
@@ -119,7 +119,8 @@ export default {
           type: 'success'
         })
         submitLoading.value = false
-        // 提交完成 重置表单
+        // 提交完成 获取最新表单
+        emit('GetInfoList')
         // 注意 重置表单必须在重置的元素绑定prop属性
         refs.addInfoForm.resetFields()
         // 重置完表单之后关闭弹窗

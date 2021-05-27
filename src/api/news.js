@@ -10,11 +10,28 @@ export const addFirstCategory = (data) => {
   })
 }
 
+// 二级分类添加
+export const addChildrenCategory = (data) => {
+  return serve.request({
+    method: 'POST',
+    url: '/news/addChildrenCategory/',
+    data
+  })
+}
+
 // 获取一级分类
 export const getFirstCategory = () => {
   return serve.request({
     method: 'POST',
     url: '/news/getCategory/'
+  })
+}
+
+// 获取所有分类
+export const getCategoryAll = () => {
+  return serve.request({
+    method: 'POST',
+    url: '/news/getCategoryAll/'
   })
 }
 

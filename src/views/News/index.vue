@@ -100,7 +100,13 @@
     <!-- 新增弹窗 -->
     <dialog-info :dialogInfo="dialogInfo" :category="options.categoryOptions" @close="close"/>
     <!-- 编辑弹窗 -->
-    <edit-dialog-info :editDialogInfo="editDialogInfo" :category="options.categoryOptions" :editDialogInfoObj="editDialogInfoObj" @closeEdit="closeEdit"/>
+    <edit-dialog-info
+      :editDialogInfo="editDialogInfo"
+      :category="options.categoryOptions"
+      :editDialogInfoObj="editDialogInfoObj"
+      @closeEdit="closeEdit"
+      @GetInfoList="GetInfoList"
+    />
   </div>
 </template>
 

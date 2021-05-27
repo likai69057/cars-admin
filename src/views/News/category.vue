@@ -4,7 +4,7 @@
     <hr style="margin: 30px -30px"/>
     <div>
       <el-row :gutter="30">
-        <el-col :span="8">
+        <el-col :span="10">
           <div class="categoryItem">
             <div class="category-wrap" v-for="item in category.item" :key="item.id">
               <i class="iconfont icon-jiahao"></i>
@@ -12,17 +12,30 @@
                 {{ item.category_name }}
                 <div class="button-group">
                   <el-button type="danger" size="mini" round @click="editFirstCategoryBtn({ data: item })">编辑</el-button>
-                  <el-button type="success" size="mini" round>添加子集</el-button>
+                  <el-button type="success" size="mini" round @click="handleAddChildren({ data: item })">添加子集</el-button>
                   <el-button size="mini" round @click="deleteFirstCategory(item.id)">删除</el-button>
                 </div>
               </h4>
               <ul v-if="item.children">
-                <li v-for="childrenItem in item.children" :key="childrenItem.id">{{ childrenItem.category_name }}</li>
+                <li v-for="childrenItem in item.children" :key="childrenItem.id">
+                  {{ childrenItem.category_name }}
+                  <div class="button-group">
+                    <el-button
+                      type="danger"
+                      size="mini"
+                      round
+                      @click="editSecCategoryBtn({ data: childrenItem, parent: item })"
+                    >
+                      编辑
+                    </el-button>
+                    <el-button size="mini" round @click="deleteSecCategory(childrenItem.id)">删除</el-button>
+                  </div>
+                </li>
               </ul>
             </div>
           </div>
         </el-col>
-        <el-col :span="16">
+        <el-col :span="14">
           <h4 class="menu-title">一级分类名称</h4>
           <el-form class="form-wrap" label-position='right' label-width="120px" ref="categoryForm">
             <el-form-item label="一级分类名称:" v-if="categoryFirstShow">
@@ -50,7 +63,7 @@
 
 <script>
 import { reactive, ref, onMounted, watch } from '@vue/composition-api'
-import { addFirstCategory, deleteCategory, editCategory } from '@/api/news'
+import { addFirstCategory, deleteCategory, editCategory, addChildrenCategory } from '@/api/news'
 import { common } from '../../api/common'
 
 export default {
@@ -83,6 +96,9 @@ export default {
       current: []
     })
 
+    // 获取一级分类
+    const { getAllCategory, categoryItem } = common()
+
     // 控制添加一级分类的显示
     const ShowFirst = () => {
       categoryChildrenShow.value = false
@@ -102,6 +118,14 @@ export default {
       if (submitType.value === 'firstCategoryEdit') {
         // 完成编辑之后的替换
         editFirstCategory()
+      }
+      if (submitType.value === 'secCategoryAdd') {
+        // 完成编辑之后的替换
+        AddChildrenCategory()
+      }
+      if (submitType.value === 'secCategoryEdit') {
+        // 完成编辑之后的替换
+        editSecCategory()
       }
     }
 
@@ -151,6 +175,7 @@ export default {
 
     // 编辑一级分类按钮方法
     const editFirstCategoryBtn = (params) => {
+      console.log(params)
       submitType.value = 'firstCategoryEdit'
       // 1.点击编辑按钮 右侧的一级分类显示方法先调用
       categoryChildrenShow.value = false
@@ -200,16 +225,136 @@ export default {
       })
     }
 
-    // 获取一级分类
-    const { getCategory, categoryItem } = common()
+    // 添加子集按钮
+    const handleAddChildren = (params) => {
+      // 二级输入框禁用取消
+      categorySecForbidden.value = false
+      // 一级输入框保持禁用
+      categoryFirstForbidden.value = true
+      // 提交按钮的开启
+      categoryButtonForbidden.value = false
+      // 一级分类输入框显示对应的categoryName
+      category.current = params.data
+      form.categoryName = params.data.category_name
+      // 防止在点击添加一级分类后再点击添加子集不显示一级分类
+      categoryChildrenShow.value = true
+
+      // 点击添加子集 submit的提交状态变成添加子集
+      submitType.value = 'secCategoryAdd'
+    }
+
+    // 添加子集后完成提交并显示
+    const AddChildrenCategory = () => {
+      if (!form.secCategoryName) {
+        root.$message({
+          message: '子集分类名称不能为空！',
+          type: 'error'
+        })
+        return false
+      }
+      const requestData = {
+        parentId: category.current.id,
+        categoryName: form.secCategoryName
+      }
+      addChildrenCategory(requestData).then(response => {
+        const data = response.data
+        root.$message({
+          message: data.message,
+          type: 'success'
+        })
+        // 清空输入框的内容和loading状态以及直接存储的current
+        form.secCategoryName = ''
+        buttonLoading.value = false
+        // 完成之后重新获取全部分类
+        getAllCategory()
+      }).catch(err => {
+        console.log(err)
+        buttonLoading.value = false
+      })
+    }
+
+    // 删除子集按钮方法
+    const deleteSecCategory = (categoryId) => {
+      console.log(categoryId)
+      root.confirm({
+        content: '确认删除当前信息？删除后无法恢复！',
+        func: () => {
+          deleteCategory({ categoryId: categoryId }).then(response => {
+            getAllCategory()
+          }).catch(err => {
+            console.log(err)
+          })
+        }
+      })
+    }
+
+    // 编辑子集按钮
+    const editSecCategoryBtn = (params) => {
+      // 点击编辑 提交状态修改成子集编辑
+      submitType.value = 'secCategoryEdit'
+      console.log(params.parent)
+      // 点击后 一级分类名称输入框显示但禁用
+      categoryFirstShow.value = true
+      categoryFirstForbidden.value = true
+      form.categoryName = params.parent.category_name
+      // 二级输入框显示并且取消禁用
+      categoryChildrenShow.value = true
+      categorySecForbidden.value = false
+      form.secCategoryName = params.data.category_name
+      // 提交按钮取消禁用状态
+      categoryButtonForbidden.value = false
+      // 3.把点击的childrenItem传入category的current数组 为了在提交是获取到点击的对象
+      category.current = params.data
+    }
+
+    // 编辑二级分类完成替换
+    const editSecCategory = () => {
+      if (form.secCategoryName === '') {
+        root.$message({
+          message: '分类名称不能为空！',
+          type: 'warning'
+        })
+        buttonLoading.value = false
+        return false
+      }
+      const requestData = {
+        id: category.current.id,
+        categoryName: form.secCategoryName
+      }
+      editCategory(requestData).then(response => {
+        const data = response.data
+        root.$message({
+          message: data.message,
+          type: 'success'
+        })
+        // 清空输入框的内容和loading状态以及直接存储的current
+        form.secCategoryName = ''
+        form.categoryName = ''
+        buttonLoading.value = false
+        category.current = []
+
+        // 输入框和提交按钮恢复禁用状态
+        categoryFirstForbidden.value = true
+        categorySecForbidden.value = true
+        categoryButtonForbidden.value = true
+
+        getAllCategory()
+      }).catch(err => {
+        // 清空输入框的内容和loading状态以及直接存储的current
+        form.categoryName = ''
+        buttonLoading.value = false
+        category.current = []
+        console.log(err)
+      })
+    }
+
     // 监听传入的category
     watch(() => categoryItem.item, (value) => {
-      console.log(value)
       category.item = value
     })
     // 获取一级分类之后 在页面加载完成之后直接调用
     onMounted(() => {
-      getCategory()
+      getAllCategory()
     })
 
     return {
@@ -229,7 +374,12 @@ export default {
       ShowFirst,
       deleteFirstCategory,
       editFirstCategoryBtn,
-      addFirst
+      addFirst,
+      handleAddChildren,
+      AddChildrenCategory,
+      deleteSecCategory,
+      editSecCategoryBtn,
+      editSecCategory
     }
   }
 }
@@ -266,6 +416,7 @@ export default {
     padding-left: 40px;
     margin-left: 20px;
     font-size: 15px;
+    font-weight: bold;
     &:before {
       content: '';
       position: absolute;
