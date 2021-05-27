@@ -23,6 +23,7 @@ export const common = () => {
       console.log(err)
     })
   }
+
   return {
     getCategory,
     getAllCategory,
