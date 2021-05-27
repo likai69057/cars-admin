@@ -1,5 +1,4 @@
 // 针对一些公用封装接口的方法
-
 import { getFirstCategory, getCategoryAll } from './news'
 import { reactive } from '@vue/composition-api'
 
