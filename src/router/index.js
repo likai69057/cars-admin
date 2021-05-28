@@ -58,6 +58,13 @@ const routes = [
         name: 'InfoCategory',
         component: () => import('@/views/News/category'),
         meta: { name: '信息分类' }
+      },
+      {
+        path: '/infoDetailed',
+        name: 'InfoDetailed',
+        component: () => import('@/views/News/detailed'),
+        meta: { name: '信息详情' },
+        hidden: true
       }
     ]
   },

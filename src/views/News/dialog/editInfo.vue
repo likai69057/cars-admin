@@ -75,7 +75,6 @@ export default {
       const categoryData = props.category.filter(item => {
         return item.id === props.editDialogInfoObj.categoryId
       })
-      console.log(props.editDialogInfoObj)
       form.category = categoryData[0].category_name
       form.title = props.editDialogInfoObj.title
       form.content = props.editDialogInfoObj.content
@@ -113,7 +112,6 @@ export default {
       }
       submitLoading.value = true
       editInfo(requestData).then(response => {
-        console.log(response)
         root.$message({
           message: response.data.message,
           type: 'success'
