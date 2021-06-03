@@ -16,33 +16,50 @@
       </el-date-picker>
     </el-form-item>
     <el-form-item label="详细内容:">
-      详细内容
+      <quill-editor v-model="form.content" ref="myQuillEditor" :options="form.editorOption" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="onSubmit">保存</el-button>
+      <el-button type="primary" @click="onSubmit" :loading="submitLoading" >保存</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script>
-import { reactive, onMounted, watch } from '@vue/composition-api'
+import { reactive, onMounted, watch, ref } from '@vue/composition-api'
 import { common } from '../../api/common'
-import { getInfoList } from '../../api/news'
+import { getInfoList, editInfo } from '../../api/news'
 import { timestampToTime } from '../../utils/common'
+
+// 富文本编辑器
+import { quillEditor } from 'vue-quill-editor'
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 export default {
   name: 'InfoDetailed',
-  setup (props, { root }) {
+  components: {
+    quillEditor
+  },
+  setup (props, { root, refs, emit }) {
     // 页面跳转时获取对应传入query参数(json格式)
     const id = root.$route.query.id
     const title = root.$route.query.title
+    // 控制提交按钮的状态
+    const submitLoading = ref(false)
     // 获取分类
     const { getCategory, categoryItem } = common()
     // form表单
     const form = reactive({
+      id: '',
       categoryId: '',
       title: '',
-      date: ''
+      date: '',
+      content: '',
+      editorOption: {
+        placeholder: '编辑文章内容'
+      }
     })
     // 接受接口传来的分类列表
     const category = reactive({
@@ -61,6 +78,53 @@ export default {
         form.categoryId = data.categoryId
         form.title = data.title
         form.date = timestampToTime(data.createDate)
+        form.content = data.content
+        form.id = data.id
+      }).catch(err => {
+        console.log(err)
+      })
+    }
+
+    // 提交方法
+    const onSubmit = () => {
+      const requestData = {
+        id: form.id,
+        categoryId: form.categoryId,
+        title: form.title,
+        content: form.content
+      }
+      if (!form.category) {
+        root.$message({
+          message: '分类名称不能为空!',
+          type: 'error'
+        })
+        return false
+      }
+      if (!form.title) {
+        root.$message({
+          message: '标题不能为空!',
+          type: 'error'
+        })
+        return false
+      }
+      if (!form.content) {
+        root.$message({
+          message: '内容不能为空!',
+          type: 'error'
+        })
+        return false
+      }
+      submitLoading.value = true
+      editInfo(requestData).then(response => {
+        root.$message({
+          message: response.data.message,
+          type: 'success'
+        })
+        submitLoading.value = false
+        // 提交完成 获取最新表单
+        emit('GetInfoList')
+        // 注意 重置表单必须在重置的元素绑定prop属性
+        refs.myQuillEditor.resetFields()
       }).catch(err => {
         console.log(err)
       })
@@ -77,14 +141,10 @@ export default {
       category.item = value
     })
 
-    // 提交方法
-    const onSubmit = () => {
-      console.log('submit!')
-    }
-
     return {
       id,
       title,
+      submitLoading,
       // reactive
       category,
       form,
