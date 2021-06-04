@@ -66,7 +66,7 @@
     >
       <el-table-column type="selection" width="45"></el-table-column>
       <el-table-column prop="title" label="标题" width="500"></el-table-column>
-      <el-table-column prop="categoryId" label="类型" width="80" :formatter="toCategory"></el-table-column>
+      <el-table-column prop="categoryId" label="类型" width="80"></el-table-column>
       <el-table-column prop="createDate" label="日期" width="150" :formatter="toDate"></el-table-column>
       <el-table-column prop="user" label="管理人" width="80"></el-table-column>
       <el-table-column label="操作">
@@ -75,6 +75,7 @@
         <template slot-scope="scope">
           <el-button type="danger" size="mini" @click="deleteItem(scope.row.id)">删除</el-button>
           <el-button type="success" size="mini" @click="EditDialogInfo(scope.row)">编辑</el-button>
+          <el-button type="success" size="mini" @click="detailed(scope.row)">编辑详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -201,13 +202,25 @@ export default {
     const toDate = row => {
       return timestampToTime(row.createDate)
     }
+
     // 获取的类型为categoryId 转换成category_name
-    const toCategory = row => {
-      // 后台获取的categoryId和页面存储的categoryId对比  获取name
-      const categoryData = options.categoryOptions.filter(item => {
-        return item.id === row.categoryId
-      })[0]
-      return categoryData.category_name
+    // const toCategory = row => {
+    //   // 后台获取的categoryId和页面存储的categoryId对比  获取name
+    //   const categoryData = options.categoryOptions.filter(item => {
+    //     return item.id === row.categoryId
+    //   })[0]
+    //   return categoryData.category_name
+    // }
+
+    // 表格编辑详情
+    const detailed = (data) => {
+      root.$router.push({
+        name: 'InfoDetailed',
+        query: {
+          id: data.id,
+          title: data.title
+        }
+      })
     }
     // 表格编辑方法
     const EditDialogInfo = (id) => {
@@ -255,6 +268,7 @@ export default {
         deleteInfoId.value = null
       })
     }
+
     // 多选框方法拿到多个对应row的id值 便于删除多个
     const handleSelectionChange = (val) => {
       const id = val.map(item => {
@@ -324,10 +338,10 @@ export default {
       deleteAll,
       GetInfoList,
       toDate,
-      toCategory,
       handleSelectionChange,
       search,
-      EditDialogInfo
+      EditDialogInfo,
+      detailed
     }
   }
 }

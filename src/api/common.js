@@ -14,6 +14,7 @@ export const common = () => {
       console.log(err)
     })
   }
+
   // 获取所有分类
   const getAllCategory = () => {
     getCategoryAll().then(response => {
