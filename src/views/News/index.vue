@@ -292,6 +292,7 @@ export default {
       getCategory()
       GetInfoList()
     })
+
     // 监听传入的category
     watch(() => categoryItem.item, (value) => {
       options.categoryOptions = value
