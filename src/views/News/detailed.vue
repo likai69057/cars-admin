@@ -9,7 +9,7 @@
       <el-input v-model="form.title"></el-input>
     </el-form-item>
     <el-form-item label="缩略图:">
-      缩略图
+      <upload-img :imgUrl.sync="form.imageUrl" :config="uploadImgConfig" />
     </el-form-item>
     <el-form-item label="发布日期:">
       <el-date-picker v-model="form.date" type="date" disabled placeholder="选择日期">
@@ -19,7 +19,7 @@
       <quill-editor v-model="form.content" ref="myQuillEditor" :options="form.editorOption" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="onSubmit" :loading="submitLoading" >保存</el-button>
+      <el-button type="primary" @click="onSubmit" :loading="submitLoading">保存</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -29,6 +29,8 @@ import { reactive, onMounted, watch, ref } from '@vue/composition-api'
 import { common } from '../../api/common'
 import { getInfoList, editInfo } from '../../api/news'
 import { timestampToTime } from '../../utils/common'
+// 导入缩略图组件
+import UploadImg from '../../components/uploadImg'
 
 // 富文本编辑器
 import { quillEditor } from 'vue-quill-editor'
@@ -40,7 +42,8 @@ import 'quill/dist/quill.bubble.css'
 export default {
   name: 'InfoDetailed',
   components: {
-    quillEditor
+    quillEditor,
+    UploadImg
   },
   setup (props, { root, refs, emit }) {
     // 页面跳转时获取对应传入query参数(json格式)
@@ -59,11 +62,21 @@ export default {
       content: '',
       editorOption: {
         placeholder: '编辑文章内容'
-      }
+      },
+      // 图片地址
+      imageUrl: ''
     })
     // 接受接口传来的分类列表
     const category = reactive({
       item: []
+    })
+
+    // 封装变动多的参数
+    const uploadImgConfig = reactive({
+      uploadUrl: 'http://up-z2.qiniup.com',
+      ak: 'Avh-EZZAa4TxqPQZsEW42fXBUbTMFi-RKSZTRKJj',
+      sk: '19AXtnhCVkZexXNRcmHXzmecXiCUiLynwGboMeUw',
+      buckety: 'webjshtml'
     })
 
     const getInfo = () => {
@@ -80,6 +93,7 @@ export default {
         form.date = timestampToTime(data.createDate)
         form.content = data.content
         form.id = data.id
+        form.imageUrl = data.imgUrl
       }).catch(err => {
         console.log(err)
       })
@@ -91,28 +105,8 @@ export default {
         id: form.id,
         categoryId: form.categoryId,
         title: form.title,
-        content: form.content
-      }
-      if (!form.category) {
-        root.$message({
-          message: '分类名称不能为空!',
-          type: 'error'
-        })
-        return false
-      }
-      if (!form.title) {
-        root.$message({
-          message: '标题不能为空!',
-          type: 'error'
-        })
-        return false
-      }
-      if (!form.content) {
-        root.$message({
-          message: '内容不能为空!',
-          type: 'error'
-        })
-        return false
+        content: form.content,
+        imgUrl: form.imageUrl
       }
       submitLoading.value = true
       editInfo(requestData).then(response => {
@@ -121,10 +115,6 @@ export default {
           type: 'success'
         })
         submitLoading.value = false
-        // 提交完成 获取最新表单
-        emit('GetInfoList')
-        // 注意 重置表单必须在重置的元素绑定prop属性
-        refs.myQuillEditor.resetFields()
       }).catch(err => {
         console.log(err)
       })
@@ -150,12 +140,12 @@ export default {
       form,
       // methods
       getInfo,
-      onSubmit
+      onSubmit,
+      uploadImgConfig
     }
   }
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="less">
 </style>

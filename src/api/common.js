@@ -1,6 +1,7 @@
 // 针对一些公用封装接口的方法
 import { getFirstCategory, getCategoryAll } from './news'
 import { reactive } from '@vue/composition-api'
+import serve from '@/utils/request'
 
 export const common = () => {
   const categoryItem = reactive({
@@ -29,4 +30,14 @@ export const common = () => {
     getAllCategory,
     categoryItem
   }
+}
+/*
+* 获取七牛云token
+* */
+export const QiniuToken = data => {
+  return serve.request({
+    method: 'POST',
+    url: '/uploadImgToken/',
+    data
+  })
 }
